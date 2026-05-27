@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "macrobond-mcp": {
+      "type": "http",
+      "url": "https://test.platform.macrobond.com/mcp/",
+      "headers": {
+        "X-Macrobond-Client-Id": "${MACROBOND_CLIENT_ID}",
+        "X-Macrobond-Client-Secret": "${MACROBOND_CLIENT_SECRET}"
+      }
+    }
+  }
+}
