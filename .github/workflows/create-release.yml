@@ -1,0 +1,58 @@
+name: Create release
+
+# Triggered when a "Release X.Y.Z" commit lands on main (i.e. the release PR is merged).
+# Creates a GitHub release tagged vX.Y.Z with a ZIP of the plugin contents attached.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create GitHub release and ZIP
+    runs-on: ubuntu-24.04
+    if: startsWith(github.event.head_commit.message, 'Release ')
+
+    steps:
+      - name: Extract version from commit message
+        id: version
+        run: |
+          set -euo pipefail
+          msg="${{ github.event.head_commit.message }}"
+          version="${msg#Release }"
+          version="${version%%$'\n'*}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Could not parse semver from commit message: '$msg'"
+            exit 1
+          fi
+          echo "version=$version"     >> "$GITHUB_OUTPUT"
+          echo "tag=v${version}"      >> "$GITHUB_OUTPUT"
+          echo "zip=macrobond-plugin-${version}.zip" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+
+      - name: Create ZIP
+        run: |
+          set -euo pipefail
+          zip -r "${{ steps.version.outputs.zip }}" \
+            plugins/ \
+            .claude-plugin/ \
+            .github/plugin/ \
+            LICENCE \
+            README.md
+          echo "Created ${{ steps.version.outputs.zip }} ✓"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh release create "${{ steps.version.outputs.tag }}" \
+            "${{ steps.version.outputs.zip }}" \
+            --title "${{ steps.version.outputs.tag }}" \
+            --notes "See [README](https://github.com/macrobond-platform/macrobond-plugins#readme) for install instructions."
+          echo "Release ${{ steps.version.outputs.tag }} created ✓"
