@@ -2,21 +2,37 @@
 
 Plugin that provides the `/macrobond` skill for Claude Code and GitHub Copilot CLI. Used together with `macrobond-mcp` — the skill provides the instructions and context for the AI agent, while the MCP server (deployed remotely) provides the tools it calls. The plugin ships a `.mcp.json` that configures the client to connect to the remote server; the server itself is not bundled.
 
-### Download
+## Install from marketplace
 
-[Download v1.0.1 (zip)](https://github.com/macrobond-platform/macrobond-plugins/archive/refs/tags/v1.0.1.zip)
-
-### Install (Claude Code)
+### Claude Code
 
 ```
 /plugin marketplace add macrobond-platform/macrobond-plugins
 /plugin install macrobond@macrobond-plugins
 ```
 
-### Install (GitHub Copilot CLI)
+### GitHub Copilot CLI
 
 ```
 /plugin marketplace add macrobond-platform/macrobond-plugins
+/plugin install macrobond@macrobond-plugins
+```
+
+## Install from ZIP
+
+Use this if you received the plugin as a ZIP archive (e.g. without GitHub access). Download the ZIP and extract it to a folder of your choice.
+
+### Claude Code
+
+```
+/plugin marketplace add <path-to-extracted-folder>
+/plugin install macrobond@macrobond-plugins
+```
+
+### GitHub Copilot CLI
+
+```
+/plugin marketplace add <path-to-extracted-folder>
 /plugin install macrobond@macrobond-plugins
 ```
 
