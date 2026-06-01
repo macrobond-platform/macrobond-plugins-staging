@@ -12,7 +12,6 @@ Plugin that provides the `/macrobond` skill for Claude Code and GitHub Copilot C
   - [Requirements](#requirements-1)
   - [Claude Code](#claude-code-1)
   - [GitHub Copilot CLI](#github-copilot-cli-1)
-  - [Credentials](#credentials)
 - [License](#license)
 
 ## Install from marketplace
@@ -61,28 +60,6 @@ To install the plugin from a ZIP file, download the ZIP, unzip it to a folder of
 /plugin marketplace add <path-to-extracted-folder>
 /plugin install macrobond@macrobond-plugins
 ```
-
-### Credentials
-
-The MCP server requires Macrobond API credentials set as environment variables:
-
-Set them persistently for your user (no admin rights needed). Restart your terminal afterwards so the new values are picked up.
-
-**Windows (PowerShell)**
-
-```powershell
-[Environment]::SetEnvironmentVariable('MACROBOND_CLIENT_ID', '<your-client-id>', 'User')
-[Environment]::SetEnvironmentVariable('MACROBOND_CLIENT_SECRET', '<your-client-secret>', 'User')
-```
-
-**macOS (zsh)**
-
-```bash
-echo 'export MACROBOND_CLIENT_ID="<your-client-id>"' >> ~/.zshrc
-echo 'export MACROBOND_CLIENT_SECRET="<your-client-secret>"' >> ~/.zshrc
-```
-
-If you use bash instead, replace `~/.zshrc` with `~/.bash_profile`.
 
 ### License
 
