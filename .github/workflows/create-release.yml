@@ -1,11 +1,14 @@
 name: Create release
 
-# Triggered when a "Release X.Y.Z" commit lands on main (i.e. the release PR is merged).
-# Creates a GitHub release tagged vX.Y.Z with a ZIP of the plugin contents attached.
+# Triggered whenever a PR is merged into main.
+# Reads the version from plugins/macrobond/plugin.json, zips the plugin
+# contents, and creates a GitHub release tagged vX.Y.Z.
+# Skips if the tag already exists (i.e. this version was already released).
 
 on:
-  push:
+  pull_request:
     branches: [main]
+    types: [closed]
 
 permissions:
   contents: write
@@ -14,28 +17,41 @@ jobs:
   release:
     name: Create GitHub release and ZIP
     runs-on: ubuntu-24.04
-    if: startsWith(github.event.head_commit.message, 'Release ')
+    if: github.event.pull_request.merged == true
 
     steps:
-      - name: Extract version from commit message
-        id: version
-        run: |
-          set -euo pipefail
-          msg="${{ github.event.head_commit.message }}"
-          version="${msg#Release }"
-          version="${version%%$'\n'*}"
-          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::Could not parse semver from commit message: '$msg'"
-            exit 1
-          fi
-          echo "version=$version"     >> "$GITHUB_OUTPUT"
-          echo "tag=v${version}"      >> "$GITHUB_OUTPUT"
-          echo "zip=macrobond-plugin-${version}.zip" >> "$GITHUB_OUTPUT"
-
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
+      - name: Read version from plugin manifest
+        id: version
+        run: |
+          set -euo pipefail
+          version=$(jq -r '.version' plugins/macrobond/plugin.json)
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Could not parse semver from plugin.json: '$version'"
+            exit 1
+          fi
+          echo "version=$version"                     >> "$GITHUB_OUTPUT"
+          echo "tag=v${version}"                      >> "$GITHUB_OUTPUT"
+          echo "zip=macrobond-plugin-${version}.zip"  >> "$GITHUB_OUTPUT"
+
+      - name: Check tag does not already exist
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" &>/dev/null; then
+            echo "Release $TAG already exists — skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Create ZIP
+        if: steps.check.outputs.skip == 'false'
         run: |
           set -euo pipefail
           zip -r "${{ steps.version.outputs.zip }}" \
@@ -47,6 +63,7 @@ jobs:
           echo "Created ${{ steps.version.outputs.zip }} ✓"
 
       - name: Create GitHub release
+        if: steps.check.outputs.skip == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
