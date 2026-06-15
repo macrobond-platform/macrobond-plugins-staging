@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "macrobond-plugins",
-  "version": "1.0.6",
-  "description": "Macrobond plugins for Claude Code",
+  "version": "1.0.7",
+  "description": "Macrobond plugins for Claude.ai",
   "owner": {
     "name": "Macrobond Financial AB",
     "email": "support@macrobond.com"
@@ -11,7 +11,7 @@
     {
       "name": "macrobond",
       "description": "Search and retrieve economic time series data from Macrobond.",
-      "version": "1.0.6",
+      "version": "1.0.7",
       "source": "./plugins/macrobond"
     }
   ]
