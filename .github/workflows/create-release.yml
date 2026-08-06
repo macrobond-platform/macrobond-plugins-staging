@@ -1,8 +1,11 @@
 name: Create release
 
 # Triggered whenever a PR is merged into main.
-# Reads the version from plugins/macrobond/plugin.json, zips the plugin
-# contents, and creates a GitHub release tagged vX.Y.Z.
+# Reads the version from plugins/macrobond/plugin.json, zips the plugin contents, and
+# creates a GitHub release tagged vX.Y.Z. The Microsoft 365 app package is not built
+# here — macrobond-platform's release pipeline commits it as m365/macrobond-m365-agent.zip
+# and this workflow attaches it, both versioned and under a fixed name so that
+# /releases/latest/download/macrobond-m365-agent.zip always resolves.
 # Skips if the tag already exists (i.e. this version was already released).
 
 on:
@@ -62,14 +65,36 @@ jobs:
             README.md
           echo "Created ${{ steps.version.outputs.zip }} ✓"
 
+      - name: Stage the M365 app package
+        if: steps.check.outputs.skip == 'false'
+        id: m365
+        run: |
+          set -euo pipefail
+          if [ ! -f m365/macrobond-m365-agent.zip ]; then
+            echo "::error::m365/macrobond-m365-agent.zip is missing. The release PR was" \
+                 "produced by a release-plugin.yml that predates the M365 agent."
+            exit 1
+          fi
+          # Two names for the same file: the versioned one is the historical record, the
+          # fixed one is what /releases/latest/download/ resolves to and what the docs link.
+          cp m365/macrobond-m365-agent.zip \
+             "macrobond-m365-agent-${{ steps.version.outputs.version }}.zip"
+          cp m365/macrobond-m365-agent.zip macrobond-m365-agent.zip
+          echo "Staged the M365 app package ✓"
+
       - name: Create GitHub release
         if: steps.check.outputs.skip == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           set -euo pipefail
           gh release create "${{ steps.version.outputs.tag }}" \
             "${{ steps.version.outputs.zip }}" \
+            "macrobond-m365-agent-${VERSION}.zip" \
+            "macrobond-m365-agent.zip" \
             --title "${{ steps.version.outputs.tag }}" \
-            --notes "See [README](https://github.com/macrobond-platform/macrobond-plugins#readme) for install instructions."
+            --notes "**Claude Code / GitHub Copilot CLI** — see [README](https://github.com/macrobond-platform/macrobond-plugins#readme).
+
+          **Microsoft 365 Copilot** — download \`macrobond-m365-agent-${VERSION}.zip\` and upload it as a custom app. See [m365/README.md](https://github.com/macrobond-platform/macrobond-plugins/blob/main/m365/README.md)."
           echo "Release ${{ steps.version.outputs.tag }} created ✓"
