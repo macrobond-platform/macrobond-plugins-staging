@@ -2,9 +2,10 @@ name: Create release
 
 # Triggered whenever a PR is merged into main.
 # Reads the version from plugins/macrobond/plugin.json, zips the plugin contents, and
-# creates a GitHub release tagged vX.Y.Z. The Microsoft 365 app package is not built
-# here — macrobond-platform's release pipeline commits it as m365/macrobond-m365-agent.zip
-# and this workflow attaches it, both versioned and under a fixed name so that
+# creates a GitHub release tagged vX.Y.Z. The Microsoft 365 app package is zipped here
+# too, from the resolved files macrobond-platform's release pipeline syncs into
+# m365/appPackage/ — so the ZIP exists only as a release asset, never in the repo. It
+# is attached both versioned and under a fixed name, so that
 # /releases/latest/download/macrobond-m365-agent.zip always resolves.
 # Skips if the tag already exists (i.e. this version was already released).
 
@@ -65,22 +66,24 @@ jobs:
             README.md
           echo "Created ${{ steps.version.outputs.zip }} ✓"
 
-      - name: Stage the M365 app package
+      - name: Create M365 app package ZIP
         if: steps.check.outputs.skip == 'false'
-        id: m365
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           set -euo pipefail
-          if [ ! -f m365/macrobond-m365-agent.zip ]; then
-            echo "::error::m365/macrobond-m365-agent.zip is missing. The release PR was" \
+          if [ ! -f m365/appPackage/manifest.json ]; then
+            echo "::error::m365/appPackage/ is missing or incomplete. The release PR was" \
                  "produced by a release-plugin.yml that predates the M365 agent."
             exit 1
           fi
+          # Zipped from inside appPackage/ so that manifest.json sits at the ZIP root.
+          # Microsoft rejects an app package whose contents are nested in a folder.
+          ( cd m365/appPackage && zip -qr "$GITHUB_WORKSPACE/macrobond-m365-agent-${VERSION}.zip" . )
           # Two names for the same file: the versioned one is the historical record, the
           # fixed one is what /releases/latest/download/ resolves to and what the docs link.
-          cp m365/macrobond-m365-agent.zip \
-             "macrobond-m365-agent-${{ steps.version.outputs.version }}.zip"
-          cp m365/macrobond-m365-agent.zip macrobond-m365-agent.zip
-          echo "Staged the M365 app package ✓"
+          cp "macrobond-m365-agent-${VERSION}.zip" macrobond-m365-agent.zip
+          echo "Created macrobond-m365-agent-${VERSION}.zip ✓"
 
       - name: Create GitHub release
         if: steps.check.outputs.skip == 'false'
