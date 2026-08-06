@@ -88,6 +88,15 @@ jobs:
                  "produced by a release-plugin.yml that predates the M365 agent."
             exit 1
           fi
+          # The app package carries its own version, written by macrobond-platform's
+          # pipeline. It must equal the one this release is named after, or a customer
+          # downloads "V1.2.3" and Teams shows them something else.
+          app_version=$(jq -r '.version' m365/appPackage/manifest.json | tr -d '\r')
+          if [ "$app_version" != "$VERSION" ]; then
+            echo "::error::version mismatch — the release is $VERSION but the app" \
+                 "package manifest says $app_version."
+            exit 1
+          fi
           # Zipped from inside appPackage/ so that manifest.json sits at the ZIP root.
           # Microsoft rejects an app package whose contents are nested in a folder.
           ( cd m365/appPackage && zip -qr "$GITHUB_WORKSPACE/${M365_ZIP}-V${VERSION}.zip" . )
