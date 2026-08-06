@@ -1,0 +1,101 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/copilot/plugin/v2.4/schema.json",
+  "schema_version": "v2.4",
+  "name_for_human": "Macrobond-staging",
+  "description_for_human": "Search and retrieve Macrobond economic and financial time series.",
+  "namespace": "mbstaging",
+  "functions": [
+    {
+      "name": "fetch_all_vintages",
+      "description": "Fetch the complete revision history for a single series.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.\n\nCall with confirm=false first to preview (fetches nothing); after the user's\nexplicit confirmation, re-call with confirm=true and the returned invocation_token.\n\nResults are paginated over the vintages: `limit` per page (default 20),\nselected by `page` (1-based). Read `total_pages` / `has_next`. Pages after\nthe first are served from the cached result — no new confirmation or quota cost."
+    },
+    {
+      "name": "fetch_entities",
+      "description": "Fetch entity metadata (without observation values). Use for Release entities or metadata-only queries.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.\n\nCall with confirm=false first to preview (fetches nothing); after the user's\nexplicit confirmation, re-call with confirm=true and the returned invocation_token.\n\nResults are paginated: `limit` entities per page (default 20), selected by\n`page` (1-based). Read `total_pages` / `has_next`. Pages after the first are\nserved from the cached result — no new confirmation or quota cost."
+    },
+    {
+      "name": "fetch_nth_release",
+      "description": "Fetch the nth release of series (0=first/initial release, 1=first revision, etc.).\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.\n\nUseful for constructing real-time datasets using only initially-released values.\n\nCall with confirm=false first to preview (fetches nothing); after the user's\nexplicit confirmation, re-call with confirm=true and the returned invocation_token.\n\nResults are paginated: `limit` series per page (default 20), selected by `page`\n(1-based). Read `total_pages` / `has_next`. Pages after the first are served\nfrom the cached result — no new confirmation or quota cost."
+    },
+    {
+      "name": "fetch_observation_history",
+      "description": "Get the revision history for specific observation dates within a series.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.\n\nShows how the value for each date changed across successive data releases.\n\nCall with confirm=false first to preview (fetches nothing); after the user's\nexplicit confirmation, re-call with confirm=true and the returned invocation_token.\n\nResults are paginated over the observations: `limit` per page (default 20),\nselected by `page` (1-based). Read `total_pages` / `has_next`. Pages after\nthe first are served from the cached result — no new confirmation or quota cost."
+    },
+    {
+      "name": "fetch_series",
+      "description": "Fetch time series data (dates and values) for one or more series by name.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.\n\nCall with confirm=false first to preview (fetches nothing); after the user's\nexplicit confirmation, re-call with confirm=true and the returned invocation_token.\n\nResults are paginated: the confirmed fetch retrieves every requested series\nonce, then hands back `limit` series per page (default 20). Read `total_pages`\n/ `has_next` and request later pages with `page` (1-based). Pages after the\nfirst are served from the cached result — no new confirmation or quota cost."
+    },
+    {
+      "name": "fetch_vintage_series",
+      "description": "Fetch series as they were at a specific point in time (vintage snapshot).\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.\n\nCall with confirm=false first to preview (fetches nothing); after the user's\nexplicit confirmation, re-call with confirm=true and the returned invocation_token.\n\nResults are paginated: `limit` series per page (default 20), selected by `page`\n(1-based). Read `total_pages` / `has_next`. Pages after the first are served\nfrom the cached result — no new confirmation or quota cost."
+    },
+    {
+      "name": "get_attribute_information",
+      "description": "Get information about metadata attributes (verify they exist).\n\nIf unsure of Macrobond's usage rules, call get_instructions() first."
+    },
+    {
+      "name": "get_instructions",
+      "description": "Return all Macrobond usage rules — discovery (searching, identifying, ranking\nand presenting series), retrieval (fetching observation values / vintages, the\nconfirm protocol) and branding (chart / table / report styling). Call this once\nper session before working with the other tools, then follow what it returns."
+    },
+    {
+      "name": "get_revision_info",
+      "description": "Check if series store revision history and get available vintage timestamps.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first."
+    },
+    {
+      "name": "list_attribute_values",
+      "description": "List all valid values for a metadata attribute (e.g., Region, Frequency, Source).\n\nCall this directly when you need canonical filter values; only fall back to\nget_attribute_information if it reports the attribute is unknown.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first."
+    },
+    {
+      "name": "render_chart",
+      "description": "Render one or more Macrobond series as an interactive line-chart widget.\n\nThis is how you show trend data on a host that renders widgets — a chart the\nuser can hover and zoom, rather than a wall of numbers. The series must already\nbe confirmed (the user picked them in the series picker); rendering unconfirmed\nseries fetches nothing and returns an error naming them.\n\nThe chart has a single value axis: only combine series with comparable\nunits and magnitudes (e.g. all percentages, or all index levels). Mixing\nscales (GDP in millions with unemployment in %) flattens the smaller\nseries into an unreadable line — render separate charts instead."
+    },
+    {
+      "name": "render_series_picker",
+      "description": "Show the user the search results and let them choose which series to fetch.\n\n**This is how you present search results — not a markdown list.** Search first,\nthen name that search here along with the series you would pick. The rows are\nrebuilt from it; you do not repeat them.\n\nThat is deliberate, and it is the difference between the picker opening in about\nthree seconds and about fifteen. Everything in a row except your recommendation\nis already on the server, so writing it out again costs seconds of your own\noutput for data that would be identical either way.\n\nConfirming a series charges UTS once and unlocks fetching it — any fetch tool,\nany date range — for one hour. This tool fetches nothing itself; it only shows\nthe choice."
+    },
+    {
+      "name": "render_table",
+      "description": "Render one or more Macrobond series as an interactive table of observations.\n\nEach row is a date; each series is a column — sortable and resizable, so this is\nhow you show exact figures rather than retyping them into markdown. The series\nmust already be confirmed (the user picked them in the series picker); rendering\nunconfirmed series fetches nothing and returns an error naming them."
+    },
+    {
+      "name": "search_entities",
+      "description": "Search for Macrobond time series by text and metadata filters. Returns entity names and metadata.\n\nUse 1-3 distinctive keywords in `text`, never a sentence (e.g. text=\"core PCE\",\nnot \"US core PCE inflation\"); put country / frequency / source into\nmust_have_values (e.g. {\"Region\": \"us\", \"Frequency\": \"monthly\"}).\n\n**Do not present these results as a list.** Read them, then open the picker on\nthis same search: `render_series_picker(search_id=<the search_id below>,\nrecommended=[names you would pick])`. That widget is how the user chooses.\n\nPass the `search_id` back, never the rows. Every field the picker shows is\nalready on the server from this search, so writing the rows out again costs\nseconds of your own output for data that would be identical either way — and\nthe handle cannot be mistyped into a different search the way a query can.\n\nResults are paginated over the full match set: `limit` (min 1, default 20)\nis the page size and `page` (1-based, default 1) selects the page. The\nresponse carries `total_count`, `total_pages` and `has_next` — read those\nto decide whether to request the next `page`. `is_truncated` is true only\nwhen Macrobond itself capped the match set, so total_count is then a floor.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first."
+    },
+    {
+      "name": "suggest_search_phrase",
+      "description": "Get search phrase suggestions for a natural language query.\n\nThis is the one tool that takes natural language — use it to turn a vague\ntopic into search terms, then apply keyword discipline to the resulting\nsearch_entities calls.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first."
+    }
+  ],
+  "runtimes": [
+    {
+      "type": "RemoteMCPServer",
+      "spec": {
+        "url": "https://staging.platform.macrobond.com/mcp",
+        "mcp_tool_description": {
+          "file": "mcp-tools.json"
+        }
+      },
+      "run_for_functions": [
+        "fetch_all_vintages",
+        "fetch_entities",
+        "fetch_nth_release",
+        "fetch_observation_history",
+        "fetch_series",
+        "fetch_vintage_series",
+        "get_attribute_information",
+        "get_instructions",
+        "get_revision_info",
+        "list_attribute_values",
+        "render_chart",
+        "render_series_picker",
+        "render_table",
+        "search_entities",
+        "suggest_search_phrase"
+      ],
+      "auth": {
+        "type": "OAuthPluginVault",
+        "reference_id": "YmVhOWNiM2EtYWU1OS00ZWE1LWEwZGUtYjMzNzFmZTQxZGQ0IyNiMjM0NTI5Yy1jNzk5LTRiNGMtYjJlYi0wMmQ5Y2I4ZmI0NzA="
+      }
+    }
+  ]
+}

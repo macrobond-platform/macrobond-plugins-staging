@@ -1,0 +1,1405 @@
+{
+  "tools": [
+    {
+      "name": "fetch_all_vintages",
+      "title": "Fetch all vintages",
+      "description": "Fetch the complete revision history for a single series.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.\n\nCall with confirm=false first to preview (fetches nothing); after the user's\nexplicit confirmation, re-call with confirm=true and the returned invocation_token.\n\nResults are paginated over the vintages: `limit` per page (default 20),\nselected by `page` (1-based). Read `total_pages` / `has_next`. Pages after\nthe first are served from the cached result — no new confirmation or quota cost.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Series name."
+          },
+          "confirm": {
+            "default": false,
+            "type": "boolean",
+            "description": "False (default) returns a preview without fetching. True performs the fetch."
+          },
+          "invocation_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Required when confirm=true. Must match the token returned by the preview call."
+          },
+          "if_modified_since": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Only return data if modified since this ISO timestamp."
+          },
+          "last_revision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "For incremental updates — LastRevisionTimeStamp from prior response."
+          },
+          "last_revision_adjustment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "For incremental updates — LastRevisionAdjustmentTimeStamp from prior response."
+          },
+          "date_end_of_period": {
+            "default": false,
+            "type": "boolean",
+            "description": "Return dates at end of period instead of start."
+          },
+          "limit": {
+            "default": 20,
+            "minimum": 1,
+            "type": "integer",
+            "description": "Vintages per page (min 1, default 20)."
+          },
+          "page": {
+            "default": 1,
+            "minimum": 1,
+            "type": "integer",
+            "description": "1-based page number over the fetched vintages."
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "fetch_entities",
+      "title": "Fetch entities",
+      "description": "Fetch entity metadata (without observation values). Use for Release entities or metadata-only queries.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.\n\nCall with confirm=false first to preview (fetches nothing); after the user's\nexplicit confirmation, re-call with confirm=true and the returned invocation_token.\n\nResults are paginated: `limit` entities per page (default 20), selected by\n`page` (1-based). Read `total_pages` / `has_next`. Pages after the first are\nserved from the cached result — no new confirmation or quota cost.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "names": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array",
+            "description": "Entity names to fetch."
+          },
+          "confirm": {
+            "default": false,
+            "type": "boolean",
+            "description": "False (default) returns a preview without fetching. True performs the fetch."
+          },
+          "invocation_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Required when confirm=true. Must match the token returned by the preview call."
+          },
+          "limit": {
+            "default": 20,
+            "minimum": 1,
+            "type": "integer",
+            "description": "Entities per page (min 1, default 20)."
+          },
+          "page": {
+            "default": 1,
+            "minimum": 1,
+            "type": "integer",
+            "description": "1-based page number over the fetched entities."
+          }
+        },
+        "required": [
+          "names"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "fetch_nth_release",
+      "title": "Fetch nth release",
+      "description": "Fetch the nth release of series (0=first/initial release, 1=first revision, etc.).\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.\n\nUseful for constructing real-time datasets using only initially-released values.\n\nCall with confirm=false first to preview (fetches nothing); after the user's\nexplicit confirmation, re-call with confirm=true and the returned invocation_token.\n\nResults are paginated: `limit` series per page (default 20), selected by `page`\n(1-based). Read `total_pages` / `has_next`. Pages after the first are served\nfrom the cached result — no new confirmation or quota cost.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "names": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array",
+            "description": "Series names to fetch."
+          },
+          "nth": {
+            "minimum": 0,
+            "type": "integer",
+            "description": "Release number (0=first release, 1=first revision, 2=second revision, ...)."
+          },
+          "confirm": {
+            "default": false,
+            "type": "boolean",
+            "description": "False (default) returns a preview without fetching. True performs the fetch."
+          },
+          "invocation_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Required when confirm=true. Must match the token returned by the preview call."
+          },
+          "get_times_of_change": {
+            "default": false,
+            "type": "boolean",
+            "description": "Include when each value was released."
+          },
+          "date_end_of_period": {
+            "default": false,
+            "type": "boolean",
+            "description": "Return dates at end of period instead of start."
+          },
+          "limit": {
+            "default": 20,
+            "minimum": 1,
+            "type": "integer",
+            "description": "Series per page (min 1, default 20)."
+          },
+          "page": {
+            "default": 1,
+            "minimum": 1,
+            "type": "integer",
+            "description": "1-based page number over the fetched series."
+          }
+        },
+        "required": [
+          "names",
+          "nth"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "fetch_observation_history",
+      "title": "Fetch observation history",
+      "description": "Get the revision history for specific observation dates within a series.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.\n\nShows how the value for each date changed across successive data releases.\n\nCall with confirm=false first to preview (fetches nothing); after the user's\nexplicit confirmation, re-call with confirm=true and the returned invocation_token.\n\nResults are paginated over the observations: `limit` per page (default 20),\nselected by `page` (1-based). Read `total_pages` / `has_next`. Pages after\nthe first are served from the cached result — no new confirmation or quota cost.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Series name."
+          },
+          "observation_dates": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array",
+            "description": "ISO observation dates, e.g. [\"2023-10-01T00:00:00Z\"]."
+          },
+          "confirm": {
+            "default": false,
+            "type": "boolean",
+            "description": "False (default) returns a preview without fetching. True performs the fetch."
+          },
+          "invocation_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Required when confirm=true. Must match the token returned by the preview call."
+          },
+          "limit": {
+            "default": 20,
+            "minimum": 1,
+            "type": "integer",
+            "description": "Observations per page (min 1, default 20)."
+          },
+          "page": {
+            "default": 1,
+            "minimum": 1,
+            "type": "integer",
+            "description": "1-based page number over the fetched observations."
+          }
+        },
+        "required": [
+          "name",
+          "observation_dates"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "fetch_series",
+      "title": "Fetch series",
+      "description": "Fetch time series data (dates and values) for one or more series by name.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.\n\nCall with confirm=false first to preview (fetches nothing); after the user's\nexplicit confirmation, re-call with confirm=true and the returned invocation_token.\n\nResults are paginated: the confirmed fetch retrieves every requested series\nonce, then hands back `limit` series per page (default 20). Read `total_pages`\n/ `has_next` and request later pages with `page` (1-based). Pages after the\nfirst are served from the cached result — no new confirmation or quota cost.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "names": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array",
+            "description": "Series names to fetch."
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Start of date range. Accepts ISO date (\"2020-01-01\") or relative\noffsets (\"-1y\", \"-6m\", \"-30d\", \"-4q\"). Defaults to one year before today."
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "End of date range. Same format as start_date. Defaults to today."
+          },
+          "confirm": {
+            "default": false,
+            "type": "boolean",
+            "description": "False (default) returns a preview without fetching. True performs the fetch."
+          },
+          "invocation_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Required when confirm=true. Must match the token returned by the preview call."
+          },
+          "date_end_of_period": {
+            "default": false,
+            "type": "boolean",
+            "description": "Return dates at end of period instead of start."
+          },
+          "limit": {
+            "default": 20,
+            "minimum": 1,
+            "type": "integer",
+            "description": "Series per page (min 1, default 20)."
+          },
+          "page": {
+            "default": 1,
+            "minimum": 1,
+            "type": "integer",
+            "description": "1-based page number over the fetched series."
+          }
+        },
+        "required": [
+          "names"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "fetch_vintage_series",
+      "title": "Fetch vintage series",
+      "description": "Fetch series as they were at a specific point in time (vintage snapshot).\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.\n\nCall with confirm=false first to preview (fetches nothing); after the user's\nexplicit confirmation, re-call with confirm=true and the returned invocation_token.\n\nResults are paginated: `limit` series per page (default 20), selected by `page`\n(1-based). Read `total_pages` / `has_next`. Pages after the first are served\nfrom the cached result — no new confirmation or quota cost.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "names": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array",
+            "description": "Series names to fetch."
+          },
+          "vintage_time": {
+            "type": "string",
+            "description": "ISO 8601 timestamp, e.g. \"2020-01-01T00:00:00Z\"."
+          },
+          "confirm": {
+            "default": false,
+            "type": "boolean",
+            "description": "False (default) returns a preview without fetching. True performs the fetch."
+          },
+          "invocation_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Required when confirm=true. Must match the token returned by the preview call."
+          },
+          "get_times_of_change": {
+            "default": false,
+            "type": "boolean",
+            "description": "Include when each value was last changed."
+          },
+          "date_end_of_period": {
+            "default": false,
+            "type": "boolean",
+            "description": "Return dates at end of period instead of start."
+          },
+          "limit": {
+            "default": 20,
+            "minimum": 1,
+            "type": "integer",
+            "description": "Series per page (min 1, default 20)."
+          },
+          "page": {
+            "default": 1,
+            "minimum": 1,
+            "type": "integer",
+            "description": "1-based page number over the fetched series."
+          }
+        },
+        "required": [
+          "names",
+          "vintage_time"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "get_attribute_information",
+      "title": "Get attribute information",
+      "description": "Get information about metadata attributes (verify they exist).\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "attributes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "attributes"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "get_instructions",
+      "title": "Get instructions",
+      "description": "Return all Macrobond usage rules — discovery (searching, identifying, ranking\nand presenting series), retrieval (fetching observation values / vintages, the\nconfirm protocol) and branding (chart / table / report styling). Call this once\nper session before working with the other tools, then follow what it returns.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "x-fastmcp-wrap-result": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "get_revision_info",
+      "title": "Get revision info",
+      "description": "Check if series store revision history and get available vintage timestamps.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "names": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "names"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "series": {
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "stores_revisions": {
+                  "type": "boolean"
+                },
+                "has_revisions": {
+                  "type": "boolean"
+                },
+                "time_stamp_of_first_revision": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "time_stamp_of_last_revision": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "vintage_timestamps": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "name",
+                "stores_revisions",
+                "has_revisions",
+                "time_stamp_of_first_revision",
+                "time_stamp_of_last_revision",
+                "vintage_timestamps"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "errors": {
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "error": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "error"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "series",
+          "errors"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "list_attribute_values",
+      "title": "List attribute values",
+      "description": "List all valid values for a metadata attribute (e.g., Region, Frequency, Source).\n\nCall this directly when you need canonical filter values; only fall back to\nget_attribute_information if it reports the attribute is unknown.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "attribute": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "attribute"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "attribute": {
+            "type": "string"
+          },
+          "values": {
+            "items": {
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "comment": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "value",
+                "description"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "attribute",
+          "values"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "render_chart",
+      "title": "Render chart",
+      "description": "Render one or more Macrobond series as an interactive line-chart widget.\n\nThis is how you show trend data on a host that renders widgets — a chart the\nuser can hover and zoom, rather than a wall of numbers. The series must already\nbe confirmed (the user picked them in the series picker); rendering unconfirmed\nseries fetches nothing and returns an error naming them.\n\nThe chart has a single value axis: only combine series with comparable\nunits and magnitudes (e.g. all percentages, or all index levels). Mixing\nscales (GDP in millions with unemployment in %) flattens the smaller\nseries into an unreadable line — render separate charts instead.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "names": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array",
+            "description": "Macrobond series primary names, e.g. [\"usgdp\", \"eurgdp\"]."
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Start of the window. Takes an ISO date (\"2020-01-01\"), a relative\noffset (\"-2y\", \"-4q\", \"-6m\", \"-30d\"), or \"all\" for the whole history.\nDefaults to ten years back. Prefer the relative form for a window the\nuser described relatively (\"the last 6 months\" -> \"-6m\"): it stays\ncorrect when the chart is re-fetched later."
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "End of the window, same formats. Omit to include the latest — and\nleave it off unless the user asked for an end, since Macrobond carries\nforecast series whose observations run past today."
+          },
+          "x_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Date-axis label under the chart. Defaults to \"Date\"."
+          },
+          "y_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Value-axis label beside the chart, e.g. \"Percent\" or\n\"Index (2020 = 100)\". Defaults to the series' shared\nDisplayUnit (\"%\" for percent), or \"Value\" when units differ."
+          }
+        },
+        "required": [
+          "names"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "subtitle": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "dates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "x_label": {
+            "type": "string"
+          },
+          "y_label": {
+            "type": "string"
+          },
+          "series": {
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "values": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "name",
+                "values"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "start": {
+            "type": "string"
+          },
+          "end": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "dates",
+          "series"
+        ],
+        "description": "Mirrors ChartData in ui/src/types.ts — keep the two in step."
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "ui/resourceUri": "ui://macrobond/chart.3bfe0513b0ca.html",
+        "ui": {
+          "resourceUri": "ui://macrobond/chart.3bfe0513b0ca.html"
+        },
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "render_series_picker",
+      "title": "Render series picker",
+      "description": "Show the user the search results and let them choose which series to fetch.\n\n**This is how you present search results — not a markdown list.** Search first,\nthen name that search here along with the series you would pick. The rows are\nrebuilt from it; you do not repeat them.\n\nThat is deliberate, and it is the difference between the picker opening in about\nthree seconds and about fifteen. Everything in a row except your recommendation\nis already on the server, so writing it out again costs seconds of your own\noutput for data that would be identical either way.\n\nConfirming a series charges UTS once and unlocks fetching it — any fetch tool,\nany date range — for one hour. This tool fetches nothing itself; it only shows\nthe choice.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "search_id": {
+            "type": "string",
+            "description": "The `search_id` from the search whose results you want shown. It\ncomes back in every search_entities response. Searches are kept for an\nhour; after that, run the search again for a fresh handle."
+          },
+          "recommended": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The series names you would have picked. Those rows arrive\npre-selected, so accepting your answer is one click. A name not in the\nresults is ignored rather than invented as a bare row."
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Heading — the question in the user's terms, e.g. \"US inflation vs\nunemployment\"."
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Sub-heading. Defaults to a count of what you pre-selected."
+          },
+          "limit": {
+            "default": 20,
+            "minimum": 1,
+            "type": "integer",
+            "description": "How many rows to show at once. The user can page through the rest."
+          }
+        },
+        "required": [
+          "search_id"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "subtitle": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "candidates": {
+            "items": {
+              "description": "One selectable series in the picker. Mirrors SeriesCandidate in ui/src/types.ts.",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "region": {
+                  "type": "string"
+                },
+                "frequency": {
+                  "type": "string"
+                },
+                "latest": {
+                  "type": "string"
+                },
+                "uts": {
+                  "type": "integer"
+                },
+                "recommended": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "name",
+                "description"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "search_id": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "page_size": {
+            "type": "integer"
+          },
+          "total_count": {
+            "type": "integer"
+          },
+          "total_pages": {
+            "type": "integer"
+          },
+          "has_next": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "title",
+          "candidates"
+        ],
+        "description": "The payload render_series_picker returns. Mirrors SeriesPickerData in ui/src/types.ts."
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "ui/resourceUri": "ui://macrobond/series_picker.e07685aead6b.html",
+        "ui": {
+          "resourceUri": "ui://macrobond/series_picker.e07685aead6b.html"
+        },
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "render_table",
+      "title": "Render table",
+      "description": "Render one or more Macrobond series as an interactive table of observations.\n\nEach row is a date; each series is a column — sortable and resizable, so this is\nhow you show exact figures rather than retyping them into markdown. The series\nmust already be confirmed (the user picked them in the series picker); rendering\nunconfirmed series fetches nothing and returns an error naming them.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "names": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array",
+            "description": "Macrobond series primary names, e.g. [\"usgdp\", \"eurgdp\"]."
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Start of the window. Takes an ISO date (\"2020-01-01\"), a relative\noffset (\"-2y\", \"-4q\", \"-6m\", \"-30d\"), or \"all\" for the whole history.\nDefaults to ten years back. Prefer the relative form for a window the\nuser described relatively (\"the last 6 months\" -> \"-6m\"): it stays\ncorrect when the table is re-fetched later."
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "End of the window, same formats. Omit to include the latest — and\nleave it off unless the user asked for an end, since Macrobond carries\nforecast series whose observations run past today."
+          }
+        },
+        "required": [
+          "names"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "subtitle": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "rows": {
+            "items": {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            "type": "array"
+          },
+          "start": {
+            "type": "string"
+          },
+          "end": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "columns",
+          "rows"
+        ],
+        "description": "Mirrors TableData in ui/src/types.ts — keep the two in step."
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "ui/resourceUri": "ui://macrobond/table.a9190a2cc844.html",
+        "ui": {
+          "resourceUri": "ui://macrobond/table.a9190a2cc844.html"
+        },
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "search_entities",
+      "title": "Search entities",
+      "description": "Search for Macrobond time series by text and metadata filters. Returns entity names and metadata.\n\nUse 1-3 distinctive keywords in `text`, never a sentence (e.g. text=\"core PCE\",\nnot \"US core PCE inflation\"); put country / frequency / source into\nmust_have_values (e.g. {\"Region\": \"us\", \"Frequency\": \"monthly\"}).\n\n**Do not present these results as a list.** Read them, then open the picker on\nthis same search: `render_series_picker(search_id=<the search_id below>,\nrecommended=[names you would pick])`. That widget is how the user chooses.\n\nPass the `search_id` back, never the rows. Every field the picker shows is\nalready on the server from this search, so writing the rows out again costs\nseconds of your own output for data that would be identical either way — and\nthe handle cannot be mistyped into a different search the way a query can.\n\nResults are paginated over the full match set: `limit` (min 1, default 20)\nis the page size and `page` (1-based, default 1) selects the page. The\nresponse carries `total_count`, `total_pages` and `has_next` — read those\nto decide whether to request the next `page`. `is_truncated` is true only\nwhen Macrobond itself capped the match set, so total_count is then a floor.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "must_have_values": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "must_not_have_values": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "entity_types": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "include_discontinued": {
+            "default": false,
+            "type": "boolean"
+          },
+          "limit": {
+            "default": 20,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "page": {
+            "default": 1,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "notice": {
+            "type": "string"
+          },
+          "entities": {
+            "items": {
+              "properties": {
+                "name": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "entity_type": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "metadata": {
+                  "additionalProperties": true,
+                  "type": "object"
+                }
+              },
+              "required": [
+                "name",
+                "entity_type",
+                "metadata"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "is_truncated": {
+            "type": "boolean"
+          },
+          "filter_suggestions": {
+            "items": {},
+            "type": "array"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "page_size": {
+            "type": "integer"
+          },
+          "total_count": {
+            "type": "integer"
+          },
+          "total_pages": {
+            "type": "integer"
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "title": {
+            "type": "string"
+          },
+          "subtitle": {
+            "type": "string"
+          },
+          "candidates": {
+            "items": {
+              "description": "One selectable series in the picker. Mirrors SeriesCandidate in ui/src/types.ts.",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "region": {
+                  "type": "string"
+                },
+                "frequency": {
+                  "type": "string"
+                },
+                "latest": {
+                  "type": "string"
+                },
+                "uts": {
+                  "type": "integer"
+                },
+                "recommended": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "name",
+                "description"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "search_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "is_truncated",
+          "filter_suggestions",
+          "page",
+          "page_size",
+          "total_count",
+          "total_pages",
+          "has_next",
+          "title",
+          "subtitle",
+          "candidates",
+          "search_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "suggest_search_phrase",
+      "title": "Suggest search phrase",
+      "description": "Get search phrase suggestions for a natural language query.\n\nThis is the one tool that takes natural language — use it to turn a vague\ntopic into search terms, then apply keyword discipline to the resulting\nsearch_entities calls.\n\nIf unsure of Macrobond's usage rules, call get_instructions() first.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "notice": {
+            "type": "string"
+          },
+          "query": {
+            "type": "string"
+          },
+          "suggestions": {
+            "items": {},
+            "type": "array"
+          }
+        },
+        "required": [
+          "query",
+          "suggestions"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    }
+  ]
+}
