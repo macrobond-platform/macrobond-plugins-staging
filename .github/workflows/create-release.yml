@@ -2,7 +2,8 @@ name: Create release
 
 # Triggered whenever a PR is merged into main.
 # Reads the version from plugins/macrobond/plugin.json, zips the plugin
-# contents, and creates a GitHub release tagged vX.Y.Z.
+# contents and the Microsoft 365 app package, and creates a GitHub release
+# tagged vX.Y.Z with both ZIPs attached.
 # Skips if the tag already exists (i.e. this version was already released).
 
 on:
@@ -32,9 +33,10 @@ jobs:
             echo "::error::Could not parse semver from plugin.json: '$version'"
             exit 1
           fi
-          echo "version=$version"                     >> "$GITHUB_OUTPUT"
-          echo "tag=v${version}"                      >> "$GITHUB_OUTPUT"
-          echo "zip=macrobond-plugin-${version}.zip"  >> "$GITHUB_OUTPUT"
+          echo "version=$version"                          >> "$GITHUB_OUTPUT"
+          echo "tag=v${version}"                           >> "$GITHUB_OUTPUT"
+          echo "zip=macrobond-plugin-${version}.zip"       >> "$GITHUB_OUTPUT"
+          echo "m365zip=macrobond-m365-agent-${version}.zip" >> "$GITHUB_OUTPUT"
 
       - name: Check tag does not already exist
         id: check
@@ -62,6 +64,20 @@ jobs:
             README.md
           echo "Created ${{ steps.version.outputs.zip }} ✓"
 
+      - name: Create M365 app package ZIP
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          set -euo pipefail
+          if [ ! -f m365/appPackage/manifest.json ]; then
+            echo "::error::m365/appPackage/manifest.json is missing. The release PR" \
+                 "was produced by a release-plugin.yml that predates the M365 agent."
+            exit 1
+          fi
+          # Zip from inside appPackage/ so manifest.json lands at the ZIP root —
+          # Microsoft rejects an app package nested inside a folder.
+          ( cd m365/appPackage && zip -qr "${GITHUB_WORKSPACE}/${{ steps.version.outputs.m365zip }}" . )
+          echo "Created ${{ steps.version.outputs.m365zip }} ✓"
+
       - name: Create GitHub release
         if: steps.check.outputs.skip == 'false'
         env:
@@ -70,6 +86,8 @@ jobs:
           set -euo pipefail
           gh release create "${{ steps.version.outputs.tag }}" \
             "${{ steps.version.outputs.zip }}" \
+            "${{ steps.version.outputs.m365zip }}" \
             --title "${{ steps.version.outputs.tag }}" \
-            --notes "See [README](https://github.com/macrobond-platform/macrobond-plugins#readme) for install instructions."
+            --notes "Claude Code and GitHub Copilot CLI: see [README](https://github.com/macrobond-platform/macrobond-plugins#readme).
+          Microsoft 365 Copilot: download \`${{ steps.version.outputs.m365zip }}\` and see [m365/README.md](https://github.com/macrobond-platform/macrobond-plugins/blob/main/m365/README.md)."
           echo "Release ${{ steps.version.outputs.tag }} created ✓"
