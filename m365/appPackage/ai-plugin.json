@@ -1,0 +1,23 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/copilot/plugin/v2.4/schema.json",
+  "schema_version": "v2.4",
+  "name_for_human": "Macrobond-staging",
+  "description_for_human": "Search and retrieve Macrobond economic and financial time series.",
+  "namespace": "mbstaging",
+  "functions": [],
+  "runtimes": [
+    {
+      "type": "RemoteMCPServer",
+      "spec": {
+        "url": "https://staging.platform.macrobond.com/mcp"
+      },
+      "run_for_functions": [
+        "*"
+      ],
+      "auth": {
+        "type": "OAuthPluginVault",
+        "reference_id": "YmVhOWNiM2EtYWU1OS00ZWE1LWEwZGUtYjMzNzFmZTQxZGQ0IyNiMjM0NTI5Yy1jNzk5LTRiNGMtYjJlYi0wMmQ5Y2I4ZmI0NzA="
+      }
+    }
+  ]
+}
