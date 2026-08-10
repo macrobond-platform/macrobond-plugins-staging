@@ -16,7 +16,7 @@
       ],
       "auth": {
         "type": "OAuthPluginVault",
-        "reference_id": "YmVhOWNiM2EtYWU1OS00ZWE1LWEwZGUtYjMzNzFmZTQxZGQ0IyNiMjM0NTI5Yy1jNzk5LTRiNGMtYjJlYi0wMmQ5Y2I4ZmI0NzA="
+        "reference_id": "YmVhOWNiM2EtYWU1OS00ZWE1LWEwZGUtYjMzNzFmZTQxZGQ0IyMyNzNiY2RkYS1mOTdkLTRmZmEtYWZkOS1iOGZhYzM1NTNhYjE="
       }
     }
   ]
