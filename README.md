@@ -1,6 +1,6 @@
 # macrobond-plugin
 
-Plugin that provides the `/macrobond` skill for Claude Code and GitHub Copilot CLI. Used together with `macrobond-mcp` — the skill provides the instructions and context for the AI agent, while the MCP server (deployed remotely) provides the tools it calls. The plugin ships a `.mcp.json` that configures the client to connect to the remote server; the server itself is not bundled.
+Plugin that provides the `/macrobond` skill for Claude Code, GitHub Copilot CLI, and Cursor, plus the MCP configuration each client needs to reach the server. Used together with `macrobond-mcp` — the skill provides the instructions and context for the AI agent, while the MCP server (deployed remotely) provides the tools it calls. The plugin ships an MCP config that connects the client to the remote server; the server itself is not bundled.
 
 ## Table of contents
 
@@ -12,6 +12,7 @@ Plugin that provides the `/macrobond` skill for Claude Code and GitHub Copilot C
   - [Requirements](#requirements-1)
   - [Claude Code](#claude-code-1)
   - [GitHub Copilot CLI](#github-copilot-cli-1)
+- [Install in Cursor](#install-in-cursor)
 - [Microsoft 365 Copilot](#microsoft-365-copilot)
   - [Requirements](#requirements-2)
   - [Tenant-wide](#tenant-wide)
@@ -64,6 +65,20 @@ To install the plugin from a ZIP file, download the ZIP, unzip it to a folder of
 /plugin marketplace add <path-to-extracted-folder>
 /plugin install macrobond@macrobond-plugins
 ```
+
+## Install in Cursor
+
+This repo is also a Cursor plugin marketplace, so Cursor installs it the same way as Claude
+Code / Copilot (requires Cursor 2.5+ for Plugins; team import needs 2.6+).
+
+- **Requirements:** [Cursor](https://cursor.com/) and internet access.
+- In Cursor, go to **Dashboard → Settings → Plugins**, click **Import** under Team
+  Marketplaces, and paste this repository's URL
+  (`https://github.com/macrobond-platform/macrobond-plugins`).
+- Install the **macrobond** plugin. This brings both halves — the `/macrobond` skill and the
+  MCP server config — in one step.
+- Complete the Macrobond OAuth sign-in when prompted. The `/macrobond` skill activates
+  automatically when you ask for economic data.
 
 ## Microsoft 365 Copilot
 
