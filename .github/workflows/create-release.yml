@@ -1,15 +1,12 @@
 name: Create release
 
-# Triggered whenever a PR is merged into main.
-# Reads the version from plugins/macrobond/plugin.json, zips the plugin contents, and
-# creates a GitHub release tagged vX.Y.Z. The Microsoft 365 app package is zipped here
-# too, from the resolved files macrobond-platform's release pipeline syncs into
-# m365/appPackage/ — so the ZIP exists only as a release asset, never in the repo. It
-# is attached both versioned and under a fixed name, so that
-# /releases/latest/download/Macrobond-AI-Data-Feed-M365-Copilot-Agent.zip always
-# resolves. Every artefact in a release carries the same version: the tag, both plugin
-# manifests, the app package's manifest.json, and the two ZIP filenames.
-# Skips if the tag already exists (i.e. this version was already released).
+# Runs when a release PR is merged into main. Reads the version the platform
+# pipeline stamped into the plugin manifests, tags the merge vX.Y.Z, and attaches
+# two ZIPs to the GitHub release: the plugin packages, and the Microsoft 365 app
+# package zipped from packages/m365/appPackage/ so that its manifest.json sits at
+# the ZIP root (Microsoft rejects a nested package). The M365 ZIP is attached both
+# versioned and under a fixed name, so /releases/latest/download/ always resolves.
+# Skips if the tag already exists.
 
 on:
   pull_request:
@@ -20,11 +17,8 @@ permissions:
   contents: write
 
 env:
-  # Hyphens, not spaces: GitHub rewrites every space in an asset filename to a dot,
-  # which would turn "Agent V1.2.3.zip" into "Agent.V1.2.3.zip". The spaced-out name
-  # is attached as the asset's display label instead, so the release page reads
-  # "Macrobond AI Data Feed - M365 Copilot Agent V1.2.3" while the file downloads
-  # with a clean, URL-safe name.
+  # Hyphens, not spaces: GitHub rewrites every space in an asset filename to a dot.
+  # The spaced-out name is the asset's display label instead.
   M365_ZIP: Macrobond-AI-Data-Feed-M365-Copilot-Agent
   M365_LABEL: Macrobond AI Data Feed - M365 Copilot Agent
 
@@ -36,20 +30,22 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Read version from plugin manifest
         id: version
         run: |
           set -euo pipefail
-          version=$(jq -r '.version' plugins/macrobond/plugin.json)
+          version=$(jq -r '.version' packages/claude/.claude-plugin/plugin.json)
           if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::Could not parse semver from plugin.json: '$version'"
             exit 1
           fi
-          echo "version=$version"                     >> "$GITHUB_OUTPUT"
-          echo "tag=v${version}"                      >> "$GITHUB_OUTPUT"
-          echo "zip=macrobond-plugin-${version}.zip"  >> "$GITHUB_OUTPUT"
+          {
+            echo "version=$version"
+            echo "tag=v${version}"
+            echo "zip=macrobond-plugin-${version}.zip"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Check tag does not already exist
         id: check
@@ -70,9 +66,12 @@ jobs:
         run: |
           set -euo pipefail
           zip -r "${{ steps.version.outputs.zip }}" \
-            plugins/ \
+            .agents/ \
             .claude-plugin/ \
+            .cursor-plugin/ \
             .github/plugin/ \
+            packages/ \
+            CHANGELOG.md \
             LICENCE \
             README.md
           echo "Created ${{ steps.version.outputs.zip }} ✓"
@@ -83,25 +82,19 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           set -euo pipefail
-          if [ ! -f m365/appPackage/manifest.json ]; then
-            echo "::error::m365/appPackage/ is missing or incomplete. The release PR was" \
-                 "produced by a release-plugin.yml that predates the M365 agent."
+          if [ ! -f packages/m365/appPackage/manifest.json ]; then
+            echo "::error::packages/m365/appPackage/ is missing or incomplete."
             exit 1
           fi
-          # The app package carries its own version, written by macrobond-platform's
-          # pipeline. It must equal the one this release is named after, or a customer
+          # Every artefact in a release carries the same version, or a customer
           # downloads "V1.2.3" and Teams shows them something else.
-          app_version=$(jq -r '.version' m365/appPackage/manifest.json | tr -d '\r')
+          app_version=$(jq -r '.version' packages/m365/appPackage/manifest.json | tr -d '\r')
           if [ "$app_version" != "$VERSION" ]; then
             echo "::error::version mismatch — the release is $VERSION but the app" \
                  "package manifest says $app_version."
             exit 1
           fi
-          # Zipped from inside appPackage/ so that manifest.json sits at the ZIP root.
-          # Microsoft rejects an app package whose contents are nested in a folder.
-          ( cd m365/appPackage && zip -qr "$GITHUB_WORKSPACE/${M365_ZIP}-V${VERSION}.zip" . )
-          # Two names for the same file: the versioned one is the historical record, the
-          # fixed one is what /releases/latest/download/ resolves to and what the docs link.
+          ( cd packages/m365/appPackage && zip -qr "$GITHUB_WORKSPACE/${M365_ZIP}-V${VERSION}.zip" . )
           cp "${M365_ZIP}-V${VERSION}.zip" "${M365_ZIP}.zip"
           echo "Created ${M365_ZIP}-V${VERSION}.zip ✓"
 
@@ -110,6 +103,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.version.outputs.version }}
+          REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
           # file#label — the label is what the release page shows for each asset.
@@ -118,7 +112,7 @@ jobs:
             "${M365_ZIP}-V${VERSION}.zip#${M365_LABEL} V${VERSION}" \
             "${M365_ZIP}.zip#${M365_LABEL} (latest)" \
             --title "${{ steps.version.outputs.tag }}" \
-            --notes "**Claude Code / GitHub Copilot CLI** — see [README](https://github.com/macrobond-platform/macrobond-plugins#readme).
+            --notes "**AI code assistants** — see [README](https://github.com/${REPOSITORY}#readme).
 
-          **Microsoft 365 Copilot** — download \`${M365_ZIP}-V${VERSION}.zip\` and upload it as a custom app. See [m365/README.md](https://github.com/macrobond-platform/macrobond-plugins/blob/main/m365/README.md)."
+          **Microsoft 365 Copilot** — download \`${M365_ZIP}-V${VERSION}.zip\` and upload it as a custom app. See [packages/m365/README.md](https://github.com/${REPOSITORY}/blob/main/packages/m365/README.md)."
           echo "Release ${{ steps.version.outputs.tag }} created ✓"
