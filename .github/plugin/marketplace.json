@@ -1,18 +1,16 @@
 {
   "name": "macrobond-plugins",
-  "version": "1.2.0",
-  "description": "Macrobond plugins for GitHub Copilot CLI",
   "owner": {
     "name": "Macrobond Financial AB",
     "email": "support@macrobond.com"
   },
+  "metadata": {
+    "description": "Macrobond plugins for GitHub Copilot CLI."
+  },
   "plugins": [
     {
       "name": "macrobond",
-      "description": "Search and retrieve economic time series data from Macrobond.",
-      "version": "1.2.0",
-      "source": "./plugins/macrobond",
-      "mcpServers": ".mcp.json"
+      "source": "./packages/copilot"
     }
   ]
 }
