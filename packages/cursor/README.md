@@ -16,7 +16,7 @@ Add the Macrobond marketplace and install the plugin:
 
 1. Open **Dashboard → Settings → Plugins**.
 2. Under **Team Marketplaces**, select **Import** and enter
-   `https://github.com/macrobond-platform/macrobond-plugins`.
+   `https://github.com/macrobond-platform/macrobond-plugins-staging`.
 3. Install the `macrobond` plugin.
 
 For a local checkout, copy or link this directory to

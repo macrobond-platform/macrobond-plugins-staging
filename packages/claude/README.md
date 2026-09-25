@@ -16,7 +16,7 @@ service.
 ### Claude Code
 
 ```text
-claude plugin marketplace add macrobond-platform/macrobond-plugins
+claude plugin marketplace add macrobond-platform/macrobond-plugins-staging
 claude plugin install macrobond@macrobond-plugins
 ```
 
@@ -25,11 +25,41 @@ open the connection panel and sign in to Macrobond.
 
 ### Claude chat and Cowork
 
-1. Open **Customize** and select the **Plugins** tab.
-2. In **Personal plugins**, select **+ → Add marketplace**.
-3. Select **Add from a repository** and add
-   `macrobond-platform/macrobond-plugins-claude-ai`.
-4. Install **Macrobond** from that marketplace.
+1. Open **Settings** and select **Plugins**.
+
+   ![Plugins page](../../docs/claude/01-plugins.png)
+
+2. Select **Add**, then **Add marketplace**.
+
+   ![Add menu](../../docs/claude/02-add-marketplace.png)
+
+3. Select **Add from a repository**.
+
+   ![Add marketplace dialog](../../docs/claude/03-add-from-repository.png)
+
+4. Enter `https://github.com/macrobond-platform/macrobond-plugins-staging` and select
+   **Sync**.
+
+   ![Repository URL](../../docs/claude/04-repository-url.png)
+
+5. Find **Macrobond** under **Discover** and add it.
+
+   ![Macrobond in Discover](../../docs/claude/05-select-macrobond.png)
+
+6. Open the plugin, select the **Connectors** tab, and select **Connect**.
+
+   ![Connectors tab](../../docs/claude/06-connectors.png)
+
+7. Select **Continue**. Keep the detected sign-in settings and select **Add**.
+
+   ![Add custom connector](../../docs/claude/07-add-connector.png)
+
+   ![Connector settings](../../docs/claude/08-connector-settings.png)
+
+8. Sign in with your Macrobond account. Start a message with `/macrobond` to use
+   the plugin.
+
+   ![Using the plugin](../../docs/claude/09-use-the-plugin.png)
 
 Team and Enterprise owners can instead add the marketplace under
 **Organization settings → Plugins** and make Macrobond available to their
