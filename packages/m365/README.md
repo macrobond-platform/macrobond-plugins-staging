@@ -18,11 +18,11 @@ install them.
 ### 1. Download the app package
 
 Download the
-[latest Macrobond app package](https://github.com/macrobond-platform/macrobond-plugins/releases/latest/download/Macrobond-AI-Data-Feed-M365-Copilot-Agent.zip).
+[latest Macrobond app package](https://github.com/macrobond-platform/macrobond-plugins-staging/releases/latest/download/Macrobond-AI-Data-Feed-M365-Copilot-Agent.zip).
 Do not unzip it; Microsoft expects the ZIP as downloaded.
 
 To install a specific version or roll back, choose a versioned package from the
-[Macrobond plugin releases](https://github.com/macrobond-platform/macrobond-plugins/releases).
+[Macrobond plugin releases](https://github.com/macrobond-platform/macrobond-plugins-staging/releases).
 
 ### 2. Upload it to Microsoft 365
 

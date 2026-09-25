@@ -17,7 +17,7 @@ Plugins 1.0 format has no field for.
 Add the Macrobond marketplace and install the plugin:
 
 ```text
-copilot plugin marketplace add macrobond-platform/macrobond-plugins
+copilot plugin marketplace add macrobond-platform/macrobond-plugins-staging
 copilot plugin install macrobond@macrobond-plugins
 ```
 

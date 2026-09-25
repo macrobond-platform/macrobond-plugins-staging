@@ -37,7 +37,7 @@ MCP service.
 A workspace administrator can make Macrobond available to workspace members:
 
 1. Open **Admin → Plugins** and select **Add → Import marketplace**.
-2. Enter `https://github.com/macrobond-platform/macrobond-plugins` as the
+2. Enter `https://github.com/macrobond-platform/macrobond-plugins-staging` as the
    source and leave the marketplace path empty.
 3. Select **Import marketplace** and authorize GitHub access when prompted.
 4. Review the import results, open **Macrobond**, and configure its installation
@@ -50,7 +50,7 @@ ChatGPT on the web.
 ### ChatGPT and Codex desktop
 
 1. Open **Plugins** and select **Add a marketplace**.
-2. Enter `macrobond-platform/macrobond-plugins` as the marketplace source.
+2. Enter `macrobond-platform/macrobond-plugins-staging` as the marketplace source.
 3. Open the **Macrobond Plugins** marketplace and install **Macrobond**.
 
 ### Codex CLI
@@ -58,7 +58,7 @@ ChatGPT on the web.
 Add the Macrobond marketplace and install the plugin:
 
 ```text
-codex plugin marketplace add https://github.com/macrobond-platform/macrobond-plugins.git
+codex plugin marketplace add https://github.com/macrobond-platform/macrobond-plugins-staging.git
 codex plugin add macrobond@macrobond-plugins
 ```
 
