@@ -5,13 +5,13 @@
     "email": "support@macrobond.com"
   },
   "metadata": {
-    "description": "Macrobond plugins for Cursor",
-    "version": "1.2.0"
+    "description": "Macrobond plugins for Cursor.",
+    "version": "1.2.1"
   },
   "plugins": [
     {
       "name": "macrobond",
-      "source": "./plugins/macrobond",
+      "source": "./packages/cursor",
       "description": "Search and retrieve economic time series data from Macrobond."
     }
   ]
