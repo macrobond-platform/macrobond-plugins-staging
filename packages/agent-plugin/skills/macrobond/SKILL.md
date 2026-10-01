@@ -27,6 +27,10 @@ Follow these steps in order for every data request.
 4. **Open the picker.** Always open `render_series_picker` with the `search_id` and the
    best results as the recommended names. The user picks in the picker; do not ask for
    confirmation in text.
+5. **Open in Macrobond Analysis.** For a link or to open the series in Macrobond
+   Analysis, reopen `render_series_picker` with the same `search_id` and the user's
+   series as the recommended names; the user confirms and uses the chart's *Open Series
+   in Macrobond Analysis* button. Do not call `create_series_preview_url` yourself.
 
 ## Hosts without the app tools
 
