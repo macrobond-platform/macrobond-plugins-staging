@@ -2,10 +2,12 @@ name: Create release
 
 # Runs when a release PR is merged into main. Reads the version the platform
 # pipeline stamped into the plugin manifests, tags the merge vX.Y.Z, and attaches
-# two ZIPs to the GitHub release: the plugin packages, and the Microsoft 365 app
+# three ZIPs to the GitHub release: the plugin packages, the Microsoft 365 app
 # package zipped from packages/m365/appPackage/ so that its manifest.json sits at
-# the ZIP root (Microsoft rejects a nested package). The M365 ZIP is attached both
-# versioned and under a fixed name, so /releases/latest/download/ always resolves.
+# the ZIP root (Microsoft rejects a nested package), and the ChatGPT web plugin
+# zipped from packages/codex/ the same way (ChatGPT web only installs a ZIP). The
+# M365 and ChatGPT ZIPs are attached both versioned and under a fixed name, so
+# /releases/latest/download/ always resolves.
 # Skips if the tag already exists.
 
 on:
@@ -21,6 +23,8 @@ env:
   # The spaced-out name is the asset's display label instead.
   M365_ZIP: Macrobond-AI-Data-Feed-M365-Copilot-Agent
   M365_LABEL: Macrobond AI Data Feed - M365 Copilot Agent
+  CHATGPT_ZIP: Macrobond-AI-Data-Feed-ChatGPT-Web
+  CHATGPT_LABEL: Macrobond AI Data Feed - ChatGPT Web
 
 jobs:
   release:
@@ -98,6 +102,16 @@ jobs:
           cp "${M365_ZIP}-V${VERSION}.zip" "${M365_ZIP}.zip"
           echo "Created ${M365_ZIP}-V${VERSION}.zip ✓"
 
+      - name: Create ChatGPT web plugin ZIP
+        if: steps.check.outputs.skip == 'false'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          ( cd packages/codex && zip -qr "$GITHUB_WORKSPACE/${CHATGPT_ZIP}-V${VERSION}.zip" . )
+          cp "${CHATGPT_ZIP}-V${VERSION}.zip" "${CHATGPT_ZIP}.zip"
+          echo "Created ${CHATGPT_ZIP}-V${VERSION}.zip ✓"
+
       - name: Create GitHub release
         if: steps.check.outputs.skip == 'false'
         env:
@@ -111,8 +125,12 @@ jobs:
             "${{ steps.version.outputs.zip }}" \
             "${M365_ZIP}-V${VERSION}.zip#${M365_LABEL} V${VERSION}" \
             "${M365_ZIP}.zip#${M365_LABEL} (latest)" \
+            "${CHATGPT_ZIP}-V${VERSION}.zip#${CHATGPT_LABEL} V${VERSION}" \
+            "${CHATGPT_ZIP}.zip#${CHATGPT_LABEL} (latest)" \
             --title "${{ steps.version.outputs.tag }}" \
             --notes "**AI code assistants** — see [README](https://github.com/${REPOSITORY}#readme).
 
-          **Microsoft 365 Copilot** — download \`${M365_ZIP}-V${VERSION}.zip\` and upload it as a custom app. See [packages/m365/README.md](https://github.com/${REPOSITORY}/blob/main/packages/m365/README.md)."
+          **Microsoft 365 Copilot** — download \`${M365_ZIP}-V${VERSION}.zip\` and upload it as a custom app. See [packages/m365/README.md](https://github.com/${REPOSITORY}/blob/main/packages/m365/README.md).
+
+          **ChatGPT web** — download \`${CHATGPT_ZIP}-V${VERSION}.zip\` and upload it as a plugin. See [packages/codex/README.md](https://github.com/${REPOSITORY}/blob/main/packages/codex/README.md)."
           echo "Release ${{ steps.version.outputs.tag }} created ✓"
