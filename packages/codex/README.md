@@ -10,27 +10,31 @@ MCP service.
 
 - An active Macrobond AI Data Feed subscription and a Macrobond account
 - Access to plugins in ChatGPT or Codex
+- On ChatGPT web, the plugin works only in chats in the **Work** tab
 
 ## Install
 
-### ChatGPT web (personal)
+### ChatGPT web
 
-1. Open **Settings → Security and login** and turn on **Developer mode**.
-2. Open **Plugins** and select **Create app**.
-3. Enter **Macrobond** as the name and
-   `https://platform.macrobond.com/mcp` as the MCP server URL. Keep
-   **Authentication** set to **OAuth**.
-4. Open **Advanced OAuth settings**, keep **User-Defined OAuth Client** selected,
-   and enter `macrobond_mcp_search_retrieval` as the OAuth client ID.
-5. Keep **Token endpoint auth method** set to **none**. Select these default
-   scopes and clear any others:
-   - `macrobond_web_api.read_mb`
-   - `macrobond_web_api.search_mb`
-   - `macrobond_web_api.search_retrieval_mcp`
-6. Turn off **OIDC enabled**, accept the custom-server warning, and select
-   **Create**.
-7. Select **Sign in with Macrobond** and complete the sign-in flow.
-8. Select **Refresh** and confirm that the Macrobond tools are available.
+1. Download the
+   [latest Macrobond ChatGPT plugin](https://github.com/macrobond-platform/macrobond-plugins-staging/releases/latest/download/Macrobond-AI-Data-Feed-ChatGPT-Web.zip).
+   Do not unzip it.
+
+2. Open **Plugins** in the sidebar. Select **+**, then **Upload plugin**.
+
+   ![Upload plugin](../../docs/chatgpt-web/01-upload-plugin.png)
+
+3. Drag the downloaded ZIP into the window, or select **click to upload** and
+   choose it.
+
+   ![New plugin](../../docs/chatgpt-web/02-choose-zip.png)
+
+4. When it shows **Import successful**, select **View Plugin**.
+
+   ![Import successful](../../docs/chatgpt-web/03-import-successful.png)
+
+5. Sign in with your Macrobond account when prompted. Start a chat in the
+   **Work** tab to use the plugin.
 
 ### ChatGPT workspace
 
@@ -47,11 +51,29 @@ The package currently configures the MCP service through `.mcp.json`, so an
 imported workspace plugin is available in the ChatGPT desktop app rather than
 ChatGPT on the web.
 
-### ChatGPT and Codex desktop
+### ChatGPT desktop
 
-1. Open **Plugins** and select **Add a marketplace**.
-2. Enter `macrobond-platform/macrobond-plugins-staging` as the marketplace source.
-3. Open the **Macrobond Plugins** marketplace and install **Macrobond**.
+1. Open **Settings** and select **Plugins**. Select **Add**, then
+   **Add a marketplace**.
+
+   ![Plugins settings](../../docs/chatgpt/01-add-marketplace.png)
+
+2. Enter `https://github.com/macrobond-platform/macrobond-plugins-staging` as the
+   **Source** and select **Add marketplace**.
+
+   ![Marketplace source](../../docs/chatgpt/02-marketplace-source.png)
+
+3. Open **Plugins** in the sidebar and select the **Personal** tab. Under
+   **Macrobond Plugins**, select **+** next to **Macrobond**.
+
+   ![Install Macrobond](../../docs/chatgpt/03-install-macrobond.png)
+
+4. Sign in with your Macrobond account when prompted. Start a message with
+   **Macrobond** to use the plugin.
+
+   ![Start a message](../../docs/chatgpt/04-start-a-message.png)
+
+   ![Using the plugin](../../docs/chatgpt/05-use-the-plugin.png)
 
 ### Codex CLI
 
@@ -60,17 +82,6 @@ Add the Macrobond marketplace and install the plugin:
 ```text
 codex plugin marketplace add https://github.com/macrobond-platform/macrobond-plugins-staging.git
 codex plugin add macrobond@macrobond-plugins
-```
-
-## Connect your Macrobond account
-
-ChatGPT or Codex asks you to connect Macrobond during installation or the first
-time you use it. Follow the prompt and sign in with your Macrobond account.
-
-In Codex CLI, you can start the sign-in flow directly:
-
-```text
-codex mcp login macrobond-mcp
 ```
 
 ## Try it
