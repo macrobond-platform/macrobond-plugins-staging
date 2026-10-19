@@ -26,7 +26,7 @@ Restart Gemini CLI after linking, then verify the extension with
 
 ## Connect your Macrobond account
 
-Run `/mcp auth macrobond-mcp`, follow the sign-in prompt, and use your Macrobond
+Run `/mcp auth macrobond-mcp-staging`, follow the sign-in prompt, and use your Macrobond
 account. Use `/mcp` to inspect the connection.
 
 ## Try it
