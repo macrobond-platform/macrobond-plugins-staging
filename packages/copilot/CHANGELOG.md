@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Removed the Gemini CLI package. Google retired Gemini CLI for personal
+  accounts on 18 June 2026.
 - Rewrote the skill as four ordered steps: a clarifying question only for
   generic requests, the server instructions, one search per concept and region,
   and the series picker as the only confirmation. Hosts without the picker keep
