@@ -16,7 +16,6 @@ for series, explain selections, and retrieve data safely.
 | GitHub Copilot CLI | GitHub Copilot CLI | [`packages/copilot`](packages/copilot) |
 | Claude Code, Claude chat, and Cowork | Claude | [`packages/claude`](packages/claude) |
 | ChatGPT and Codex | Codex | [`packages/codex`](packages/codex) |
-| Gemini CLI | Gemini | [`packages/gemini`](packages/gemini) |
 | Microsoft 365 Copilot | Microsoft 365 | [`packages/m365`](packages/m365) |
 
 ## What you can do
