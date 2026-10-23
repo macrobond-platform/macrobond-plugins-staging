@@ -7,7 +7,7 @@ service.
 
 ## Requirements
 
-- An active Macrobond AI Data Feed subscription and a Macrobond account
+- An active Macrobond AI Data Feed subscription or Macrobond Assist license, and a Macrobond account
 - Cursor 2.5 or later
 
 ## Install

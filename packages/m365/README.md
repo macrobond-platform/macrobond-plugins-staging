@@ -8,7 +8,7 @@ leaving the conversation.
 
 - A [Microsoft 365 Copilot license](https://learn.microsoft.com/microsoft-365-copilot/extensibility/prerequisites#prerequisites)
 - Permission to upload custom apps in your Microsoft 365 tenant
-- An active Macrobond AI Data Feed subscription and a Macrobond account
+- An active Macrobond AI Data Feed subscription or Macrobond Assist license, and a Macrobond account
 
 Your Teams administrator controls whether custom apps can be uploaded and who can
 install them.

@@ -8,7 +8,7 @@ MCP service.
 
 ## Requirements
 
-- An active Macrobond AI Data Feed subscription and a Macrobond account
+- An active Macrobond AI Data Feed subscription or Macrobond Assist license, and a Macrobond account
 - Access to plugins in ChatGPT or Codex
 - On ChatGPT web, the plugin works only in chats in the **Work** tab
 

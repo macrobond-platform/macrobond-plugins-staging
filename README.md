@@ -35,8 +35,8 @@ For example:
 
 ## What you need
 
-You need an active Macrobond AI Data Feed subscription, a Macrobond account, and
-a supported client. When prompted, sign in with your Macrobond account.
+You need an active Macrobond AI Data Feed subscription or Macrobond Assist
+license, a Macrobond account, and a supported client. When prompted, sign in with your Macrobond account.
 
 ## Repository contents
 

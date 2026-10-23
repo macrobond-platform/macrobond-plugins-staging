@@ -8,7 +8,7 @@ MCP service.
 
 ## Requirements
 
-- An active Macrobond AI Data Feed subscription and a Macrobond account
+- An active Macrobond AI Data Feed subscription or Macrobond Assist license, and a Macrobond account
 - Gemini CLI with extension support
 
 ## Install from a local checkout

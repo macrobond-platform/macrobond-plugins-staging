@@ -9,7 +9,7 @@ Plugins 1.0 format has no field for.
 
 ## Requirements
 
-- An active Macrobond AI Data Feed subscription and a Macrobond account
+- An active Macrobond AI Data Feed subscription or Macrobond Assist license, and a Macrobond account
 - GitHub Copilot CLI
 
 ## Install

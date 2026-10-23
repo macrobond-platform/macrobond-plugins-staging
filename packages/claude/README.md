@@ -8,7 +8,7 @@ service.
 
 ## Requirements
 
-- An active Macrobond AI Data Feed subscription and a Macrobond account
+- An active Macrobond AI Data Feed subscription or Macrobond Assist license, and a Macrobond account
 - Claude Code, or access to plugins in Claude or Cowork
 
 ## Install
