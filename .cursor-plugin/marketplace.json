@@ -1,18 +1,23 @@
 {
-  "name": "macrobond-plugins",
+  "name": "macrobond-plugins-staging",
   "owner": {
     "name": "Macrobond Financial AB",
     "email": "support@macrobond.com"
   },
   "metadata": {
     "description": "Macrobond plugins for Cursor.",
-    "version": "1.2.10"
+    "version": "1.2.12"
   },
   "plugins": [
     {
       "name": "macrobond",
-      "source": "./packages/cursor",
+      "source": "./plugins/macrobond-ai-datafeed/cursor",
       "description": "Search and retrieve economic time series data from Macrobond."
+    },
+    {
+      "name": "macrobond-assist",
+      "source": "./plugins/macrobond-assist/cursor",
+      "description": "Spend your time on the analysis, not on finding the data"
     }
   ]
 }

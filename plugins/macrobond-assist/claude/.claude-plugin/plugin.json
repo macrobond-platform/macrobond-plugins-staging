@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "macrobond-assist",
+  "displayName": "Macrobond Assist-staging",
+  "version": "1.2.12",
+  "description": "Spend your time on the analysis, not on finding the data",
+  "author": {
+    "name": "Macrobond Financial AB",
+    "email": "support@macrobond.com",
+    "url": "https://www.macrobond.com"
+  },
+  "homepage": "https://help.macrobond.com/tutorials-training/mb-assist-user-guides/assist-user-guide/",
+  "repository": "https://github.com/macrobond-platform/macrobond-plugins-staging",
+  "license": "LicenseRef-Macrobond-Proprietary",
+  "keywords": [
+    "macrobond",
+    "macrobond-assist",
+    "economic-data",
+    "macroeconomics",
+    "financial-data",
+    "market-data",
+    "time-series",
+    "financial-services",
+    "developer-tools"
+  ]
+}
