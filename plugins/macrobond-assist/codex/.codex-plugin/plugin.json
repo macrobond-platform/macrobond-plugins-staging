@@ -1,0 +1,51 @@
+{
+  "name": "macrobond-assist",
+  "version": "1.2.13",
+  "description": "Spend your time on the analysis, not on finding the data",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Macrobond Assist-staging",
+    "shortDescription": "Ground AI in trusted data",
+    "longDescription": "Macrobond Assist connects ChatGPT and Codex to 290M+ licensed macroeconomic time series, enabling trusted data discovery, retrieval and analysis directly from AI workflows.\n\nDescribe what you want to investigate in plain language. Macrobond Assist finds the relevant data, shows you where it comes from, and charts it so you can check it is the right data before you use it.\n\nPrivate by design.\nGrounded in trusted macro intelligence.\nReady for institutional AI deployments.",
+    "developerName": "Macrobond Financial AB",
+    "category": "Data & Analytics",
+    "capabilities": [
+      "Data & Analytics",
+      "Financial Services",
+      "Developer Tools",
+      "Search",
+      "Read"
+    ],
+    "websiteURL": "https://help.macrobond.com/tutorials-training/mb-assist-user-guides/assist-user-guide/",
+    "privacyPolicyURL": "https://www.macrobond.com/privacy-policy",
+    "termsOfServiceURL": "https://help.macrobond.com/legal/agreements/master-subscription-license-agreement/",
+    "brandColor": "#0700FF",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png",
+    "defaultPrompt": [
+      "Give me a chart of Sweden GDP.",
+      "Compare US and euro area core inflation over the last ten years.",
+      "Show me a table of German unemployment, monthly, since 2020."
+    ]
+  },
+  "author": {
+    "name": "Macrobond Financial AB",
+    "email": "support@macrobond.com",
+    "url": "https://www.macrobond.com"
+  },
+  "homepage": "https://help.macrobond.com/tutorials-training/mb-assist-user-guides/assist-user-guide/",
+  "repository": "https://github.com/macrobond-platform/macrobond-plugins-staging",
+  "license": "LicenseRef-Macrobond-Proprietary",
+  "keywords": [
+    "macrobond",
+    "macrobond-assist",
+    "economic-data",
+    "macroeconomics",
+    "financial-data",
+    "market-data",
+    "time-series",
+    "financial-services",
+    "developer-tools"
+  ]
+}

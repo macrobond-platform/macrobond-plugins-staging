@@ -1,0 +1,9 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "macrobond-assist-mcp-staging": {
+      "type": "streamable-http",
+      "url": "https://staging.suite.macrobond.com/assist/mcp"
+    }
+  }
+}
