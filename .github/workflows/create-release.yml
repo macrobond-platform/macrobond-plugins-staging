@@ -2,12 +2,12 @@ name: Create release
 
 # Runs when a release PR is merged into main. Reads the version the platform
 # pipeline stamped into the plugin manifests, tags the merge vX.Y.Z, and attaches
-# three ZIPs to the GitHub release: the plugin packages, the Microsoft 365 app
-# package zipped from packages/m365/appPackage/ so that its manifest.json sits at
-# the ZIP root (Microsoft rejects a nested package), and the ChatGPT web plugin
-# zipped from packages/codex/ the same way (ChatGPT web only installs a ZIP). The
-# M365 and ChatGPT ZIPs are attached both versioned and under a fixed name, so
-# /releases/latest/download/ always resolves.
+# ZIPs to the GitHub release: all the plugin packages, and for each plugin its
+# Microsoft 365 app package zipped from plugins/<plugin>/m365/appPackage/ so that
+# its manifest.json sits at the ZIP root (Microsoft rejects a nested package), and
+# its ChatGPT web plugin zipped from plugins/<plugin>/codex/ the same way (ChatGPT
+# web only installs a ZIP). The M365 and ChatGPT ZIPs are attached both versioned
+# and under a fixed name, so /releases/latest/download/ always resolves.
 # Skips if the tag already exists.
 
 on:
@@ -19,16 +19,16 @@ permissions:
   contents: write
 
 env:
+  # Each line is the plugin's folder, its ZIP prefix and its display label.
   # Hyphens, not spaces: GitHub rewrites every space in an asset filename to a dot.
   # The spaced-out name is the asset's display label instead.
-  M365_ZIP: Macrobond-AI-Data-Feed-M365-Copilot-Agent
-  M365_LABEL: Macrobond AI Data Feed - M365 Copilot Agent
-  CHATGPT_ZIP: Macrobond-AI-Data-Feed-ChatGPT-Web
-  CHATGPT_LABEL: Macrobond AI Data Feed - ChatGPT Web
+  PLUGINS: |
+    macrobond-ai-datafeed|Macrobond-AI-Data-Feed|Macrobond AI Data Feed
+    macrobond-assist|Macrobond-Assist|Macrobond Assist
 
 jobs:
   release:
-    name: Create GitHub release and ZIP
+    name: Create GitHub release and ZIPs
     runs-on: ubuntu-24.04
     if: github.event.pull_request.merged == true
 
@@ -40,7 +40,7 @@ jobs:
         id: version
         run: |
           set -euo pipefail
-          version=$(jq -r '.version' packages/claude/.claude-plugin/plugin.json)
+          version=$(jq -r '.version' plugins/macrobond-ai-datafeed/claude/.claude-plugin/plugin.json)
           if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::Could not parse semver from plugin.json: '$version'"
             exit 1
@@ -65,72 +65,56 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Create ZIP
-        if: steps.check.outputs.skip == 'false'
-        run: |
-          set -euo pipefail
-          zip -r "${{ steps.version.outputs.zip }}" \
-            .agents/ \
-            .claude-plugin/ \
-            .cursor-plugin/ \
-            .github/plugin/ \
-            packages/ \
-            CHANGELOG.md \
-            LICENCE \
-            README.md
-          echo "Created ${{ steps.version.outputs.zip }} ✓"
-
-      - name: Create M365 app package ZIP
+      - name: Create ZIPs
         if: steps.check.outputs.skip == 'false'
         env:
           VERSION: ${{ steps.version.outputs.version }}
+          ZIP: ${{ steps.version.outputs.zip }}
         run: |
           set -euo pipefail
-          if [ ! -f packages/m365/appPackage/manifest.json ]; then
-            echo "::error::packages/m365/appPackage/ is missing or incomplete."
-            exit 1
-          fi
-          # Every artefact in a release carries the same version, or a customer
-          # downloads "V1.2.3" and Teams shows them something else.
-          app_version=$(jq -r '.version' packages/m365/appPackage/manifest.json | tr -d '\r')
-          if [ "$app_version" != "$VERSION" ]; then
-            echo "::error::version mismatch — the release is $VERSION but the app" \
-                 "package manifest says $app_version."
-            exit 1
-          fi
-          ( cd packages/m365/appPackage && zip -qr "$GITHUB_WORKSPACE/${M365_ZIP}-V${VERSION}.zip" . )
-          cp "${M365_ZIP}-V${VERSION}.zip" "${M365_ZIP}.zip"
-          echo "Created ${M365_ZIP}-V${VERSION}.zip ✓"
-
-      - name: Create ChatGPT web plugin ZIP
-        if: steps.check.outputs.skip == 'false'
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          set -euo pipefail
-          ( cd packages/codex && zip -qr "$GITHUB_WORKSPACE/${CHATGPT_ZIP}-V${VERSION}.zip" . )
-          cp "${CHATGPT_ZIP}-V${VERSION}.zip" "${CHATGPT_ZIP}.zip"
-          echo "Created ${CHATGPT_ZIP}-V${VERSION}.zip ✓"
+          zip -qr "$ZIP" .agents/ .claude-plugin/ .cursor-plugin/ .github/plugin/ plugins/ LICENCE README.md
+          echo "$ZIP" > assets.txt
+          while IFS='|' read -r folder prefix label; do
+            [ -n "$folder" ] || continue
+            app=plugins/$folder/m365/appPackage
+            if [ ! -f "$app/manifest.json" ]; then
+              echo "::error::$app/ is missing or incomplete."
+              exit 1
+            fi
+            # Every artefact in a release carries the same version, or a customer
+            # downloads "V1.2.3" and Teams shows them something else.
+            app_version=$(jq -r '.version' "$app/manifest.json" | tr -d '\r')
+            if [ "$app_version" != "$VERSION" ]; then
+              echo "::error::version mismatch — the release is $VERSION but $app/manifest.json says $app_version."
+              exit 1
+            fi
+            for kind in "M365-Copilot-Agent|M365 Copilot Agent|$app" "ChatGPT-Web|ChatGPT Web|plugins/$folder/codex"; do
+              IFS='|' read -r suffix title source <<< "$kind"
+              name="${prefix}-${suffix}"
+              ( cd "$source" && zip -qr "$GITHUB_WORKSPACE/${name}-V${VERSION}.zip" . )
+              cp "${name}-V${VERSION}.zip" "${name}.zip"
+              echo "${name}-V${VERSION}.zip#${label} - ${title} V${VERSION}" >> assets.txt
+              echo "${name}.zip#${label} - ${title} (latest)" >> assets.txt
+              echo "Created ${name}-V${VERSION}.zip ✓"
+            done
+          done <<< "$PLUGINS"
 
       - name: Create GitHub release
         if: steps.check.outputs.skip == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ steps.version.outputs.version }}
+          TAG: ${{ steps.version.outputs.tag }}
           REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
+          mapfile -t assets < assets.txt
+          blob="https://github.com/${REPOSITORY}/blob/main/plugins"
           # file#label — the label is what the release page shows for each asset.
-          gh release create "${{ steps.version.outputs.tag }}" \
-            "${{ steps.version.outputs.zip }}" \
-            "${M365_ZIP}-V${VERSION}.zip#${M365_LABEL} V${VERSION}" \
-            "${M365_ZIP}.zip#${M365_LABEL} (latest)" \
-            "${CHATGPT_ZIP}-V${VERSION}.zip#${CHATGPT_LABEL} V${VERSION}" \
-            "${CHATGPT_ZIP}.zip#${CHATGPT_LABEL} (latest)" \
-            --title "${{ steps.version.outputs.tag }}" \
+          gh release create "$TAG" "${assets[@]}" \
+            --title "$TAG" \
             --notes "**AI code assistants** — see [README](https://github.com/${REPOSITORY}#readme).
 
-          **Microsoft 365 Copilot** — download \`${M365_ZIP}-V${VERSION}.zip\` and upload it as a custom app. See [packages/m365/README.md](https://github.com/${REPOSITORY}/blob/main/packages/m365/README.md).
+          **Microsoft 365 Copilot** — download the plugin's \`…-M365-Copilot-Agent-V….zip\` and upload it as a custom app. See the [Macrobond AI Data Feed](${blob}/macrobond-ai-datafeed/m365/README.md) and [Macrobond Assist](${blob}/macrobond-assist/m365/README.md) guides.
 
-          **ChatGPT web** — download \`${CHATGPT_ZIP}-V${VERSION}.zip\` and upload it as a plugin. See [packages/codex/README.md](https://github.com/${REPOSITORY}/blob/main/packages/codex/README.md)."
-          echo "Release ${{ steps.version.outputs.tag }} created ✓"
+          **ChatGPT web** — download the plugin's \`…-ChatGPT-Web-V….zip\` and upload it as a plugin. See the [Macrobond AI Data Feed](${blob}/macrobond-ai-datafeed/codex/README.md) and [Macrobond Assist](${blob}/macrobond-assist/codex/README.md) guides."
+          echo "Release $TAG created ✓"
