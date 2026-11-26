@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
-  "name": "macrobond-plugins",
+  "name": "macrobond-plugins-staging",
   "description": "Macrobond plugins for Claude Code.",
   "owner": {
     "name": "Macrobond Financial AB",
@@ -9,7 +9,11 @@
   "plugins": [
     {
       "name": "macrobond",
-      "source": "./packages/claude"
+      "source": "./plugins/macrobond-ai-datafeed/claude"
+    },
+    {
+      "name": "macrobond-assist",
+      "source": "./plugins/macrobond-assist/claude"
     }
   ]
 }

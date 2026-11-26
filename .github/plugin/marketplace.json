@@ -1,5 +1,5 @@
 {
-  "name": "macrobond-plugins",
+  "name": "macrobond-plugins-staging",
   "owner": {
     "name": "Macrobond Financial AB",
     "email": "support@macrobond.com"
@@ -10,7 +10,11 @@
   "plugins": [
     {
       "name": "macrobond",
-      "source": "./packages/copilot"
+      "source": "./plugins/macrobond-ai-datafeed/copilot"
+    },
+    {
+      "name": "macrobond-assist",
+      "source": "./plugins/macrobond-assist/copilot"
     }
   ]
 }

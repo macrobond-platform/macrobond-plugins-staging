@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "macrobond-assist-mcp-staging": {
+      "type": "http",
+      "url": "https://staging.suite.macrobond.com/assist/mcp",
+      "oauthClientId": "macrobond_mcp_search_retrieval",
+      "oauthPublicClient": true
+    }
+  }
+}

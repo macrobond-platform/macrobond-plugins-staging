@@ -1,0 +1,36 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/copilot/declarative-agent/v1.9/schema.json",
+    "version": "v1.9",
+    "name": "Macrobond Assist-staging",
+    "description": "Spend your time on the analysis, not on finding the data",
+    "instructions": "For any request about economic or financial data, use the macrobond-assist skill and follow it.",
+    "conversation_starters": [
+        {
+            "title": "Chart an indicator",
+            "text": "Give me a chart of Sweden GDP."
+        },
+        {
+            "title": "Compare inflation",
+            "text": "Compare US and euro area core inflation over the last ten years."
+        },
+        {
+            "title": "Build a table",
+            "text": "Show me a table of German unemployment, monthly, since 2020."
+        },
+        {
+            "title": "Analyze revisions",
+            "text": "What was US GDP growth as first reported, versus the current figure?"
+        }
+    ],
+    "actions": [
+        {
+            "id": "ai-plugin",
+            "file": "ai-plugin.json"
+        }
+    ],
+    "agent_skills": [
+        {
+            "folder": "skills/macrobond-assist"
+        }
+    ]
+}
