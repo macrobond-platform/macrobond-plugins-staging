@@ -9,7 +9,11 @@
   "plugins": [
     {
       "name": "macrobond",
-      "source": "./packages/claude"
+      "source": "./plugins/macrobond-ai-datafeed/claude"
+    },
+    {
+      "name": "macrobond-assist",
+      "source": "./plugins/macrobond-assist/claude"
     }
   ]
 }

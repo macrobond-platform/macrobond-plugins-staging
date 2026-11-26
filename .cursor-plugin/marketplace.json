@@ -6,13 +6,18 @@
   },
   "metadata": {
     "description": "Macrobond plugins for Cursor.",
-    "version": "1.2.10"
+    "version": "1.2.11"
   },
   "plugins": [
     {
       "name": "macrobond",
-      "source": "./packages/cursor",
+      "source": "./plugins/macrobond-ai-datafeed/cursor",
       "description": "Search and retrieve economic time series data from Macrobond."
+    },
+    {
+      "name": "macrobond-assist",
+      "source": "./plugins/macrobond-assist/cursor",
+      "description": "Spend your time on the analysis, not on finding the data"
     }
   ]
 }

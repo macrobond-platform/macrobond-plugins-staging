@@ -1,0 +1,34 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.29/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.29",
+    "version": "1.2.11",
+    "id": "8b32f8f9-4715-4762-a106-2ee977a26992",
+    "developer": {
+        "name": "Macrobond Financial AB",
+        "websiteUrl": "https://help.macrobond.com/tutorials-training/mb-assist-user-guides/assist-user-guide/",
+        "privacyUrl": "https://www.macrobond.com/privacy-policy",
+        "termsOfUseUrl": "https://help.macrobond.com/legal/agreements/master-subscription-license-agreement/"
+    },
+    "icons": {
+        "color": "logo.png",
+        "outline": "icon.png"
+    },
+    "name": {
+        "short": "Macrobond Assist-staging",
+        "full": "Macrobond Assist"
+    },
+    "description": {
+        "short": "Spend your time on the analysis, not on finding the data",
+        "full": "Macrobond Assist connects Microsoft 365 Copilot to 290M+ licensed macroeconomic time series, enabling trusted data discovery, retrieval and analysis directly from AI workflows.\n\nDescribe what you want to investigate in plain language. Macrobond Assist finds the relevant data, shows you where it comes from, and charts it so you can check it is the right data before you use it.\n\nPrivate by design.\nGrounded in trusted macro intelligence.\nReady for institutional AI deployments."
+    },
+    "accentColor": "#0700FF",
+    "copilotAgents": {
+        "declarativeAgents": [
+            {
+                "id": "declarativeAgent",
+                "file": "declarativeAgent.json"
+            }
+        ]
+    },
+    "supportsChannelFeatures": "tier1"
+}
